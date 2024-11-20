@@ -2,3 +2,4 @@ gymnasium==1.0.0
 minari==0.5.1
 stable-baselines3==2.4.0
 huggingface-sb3==3.0
+torch-summary==1.4.5
