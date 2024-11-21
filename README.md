@@ -11,11 +11,15 @@ In this section, we will cover basic concepts of reinforcement learning and deta
 
 ### Terminology
 We will define some terminology and notations that will be used in the following sections.  
-**Agent**:
-**Environment**:
-**Action Space**:
-**Observation Space**:
-**Policy**:
+**Agent**:  
+
+**Environment**:  
+
+**Action Space**:  
+
+**Observation Space**:  
+
+**Policy**:  
 
 ### Imitation Learning (Behavior Cloning)
 The idea behind imitation learning is quite straightforward. Given an expert demonstration of the task we want the model to perform, can we make the model learn the expert's policy? We implement this using Behavior Cloning, which has one of the simplest architectures.  
