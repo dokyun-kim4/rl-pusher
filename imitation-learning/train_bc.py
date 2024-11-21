@@ -48,12 +48,13 @@ env = gym.make('Pusher-v5', render_mode="human")
 for i in tqdm(range(n_episodes)):
     obs, _ = env.reset()
     while True:
-        # action = env.action_space.sample()
+        action = env.action_space.sample()
         
         with torch.no_grad():
             action = model(torch.Tensor(obs).to(device))
             action = action.cpu().numpy()
-            obs, rew, terminated, truncated, info = env.step(action)
+
+        obs, rew, terminated, truncated, info = env.step(action)
         env.render()
 
         if terminated or truncated:
