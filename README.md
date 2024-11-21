@@ -11,6 +11,7 @@ In this section, we will cover basic concepts of reinforcement learning and deta
 
 ### Terminology
 We will define some terminology and notations that will be used in the following sections.  
+
 **Agent**:  
 
 **Environment**:  
