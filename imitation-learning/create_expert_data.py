@@ -22,7 +22,10 @@ def get_expert_demo(dataset_id: str, n_episodes:int=100, visualize:bool = True) 
         n_episodes (int): Number of episodes the expert will demonstrate
         visualize (bool): Visualizes the expert demonstration when True
     """
-    env = DataCollector(gym.make(ENV_ID, render_mode = 'human'))
+
+
+    render_mode = 'human' if visualize else "rgb_array"
+    env = DataCollector(gym.make(ENV_ID, render_mode = render_mode))
     checkpoint = load_from_hub(repo_id=REPO_ID, filename=FILENAME)
     expert = SAC.load(checkpoint)
 
@@ -32,9 +35,6 @@ def get_expert_demo(dataset_id: str, n_episodes:int=100, visualize:bool = True) 
         while True:
             action, _ = expert.predict(obs)
             obs, rew, terminated, truncated, info = env.step(action)
-
-            if visualize:
-                env.render()
 
             if terminated or truncated:
                 break
@@ -55,5 +55,5 @@ def get_expert_demo(dataset_id: str, n_episodes:int=100, visualize:bool = True) 
 
 
 if __name__ == "__main__":
-    dataset_id = "pusher/expert-v0"
-    get_expert_demo(dataset_id, n_episodes=10)
+    dataset_id = "pusher/expert-v1"
+    get_expert_demo(dataset_id, n_episodes=1_000, visualize=False)
