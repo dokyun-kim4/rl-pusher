@@ -3,3 +3,5 @@ minari==0.5.1
 stable-baselines3==2.4.0
 huggingface-sb3==3.0
 torch-summary==1.4.5
+panda-gym==3.0.7
+sb3-contrib==2.5.0a0
