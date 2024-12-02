@@ -1,5 +1,6 @@
 # Project specific
 *.pth
+logs/
 
 
 # Byte-compiled / optimized / DLL files
