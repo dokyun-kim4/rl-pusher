@@ -1,7 +1,8 @@
 import torch
-from gymnasium import Env
+from gymnasium import Env, spaces
 from torch.utils.data import DataLoader
 import minari
+import numpy as np
 
 
 
@@ -43,10 +44,12 @@ def collate_fn(batch):
 
 if __name__ == "__main__":
     data_path = "PandaSlide/test-v0"
-    batch_size = 1  # How many episodes per batch
+    batch_size = 2  # How many episodes per batch
     dataloader, env = load_dataset(data_path, batch_size)
     
-    for batch in dataloader:
-        print(batch)
-        break
+    obs_space, act_space = env.observation_space, env.action_space
+    assert isinstance(obs_space, spaces.Dict)
+    assert isinstance(act_space, spaces.Box)
+    print(np.prod(obs_space['achieved_goal'].shape) + np.prod(obs_space['desired_goal'].shape) + np.prod(obs_space['observation'].shape)) # type: ignore
+    print(np.prod(act_space.shape))
 

@@ -62,5 +62,5 @@ def get_expert_demo(dataset_id: str, env_id: str, n_episodes:int=100, visualize:
 
 if __name__ == "__main__":
     env_id = "PandaSlide-v3"
-    dataset_id = "PandaSlide/test-v0"
-    get_expert_demo(dataset_id, env_id, n_episodes=10, visualize=True)
+    dataset_id = "PandaSlide/expert-v0"
+    get_expert_demo(dataset_id, env_id, n_episodes=10_000, visualize=False)
