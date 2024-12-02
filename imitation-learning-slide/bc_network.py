@@ -7,7 +7,7 @@ import torch.nn as nn
 from collections import OrderedDict
 from torchsummary import summary
 
-class BCnetwork(nn.Module):
+class BCnetworkPanda(nn.Module):
     def __init__(self, input_dim, output_dim):
         super().__init__()
         self.network = nn.Sequential(
@@ -23,23 +23,20 @@ class BCnetwork(nn.Module):
             )
         )
 
-        self.scalar = 2.0
-
     def forward(self, x):
         x = self.network(x)
-        x = x * self.scalar  # Action space values need to be [-2, 2]
         return x
 
 
 if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = BCnetwork(input_dim=23, output_dim=7).to(device)
+    model = BCnetworkPanda(input_dim=24, output_dim=3).to(device)
 
-    summary(model, (1, 23))
+    summary(model, (1, 24))
 
     # Check that model behaves as expected
-    input = torch.linspace(-10, 10, 23).to(device)
+    input = torch.linspace(-10, 10, 24).to(device)
     print(input.shape)
     output = model.forward(input)
 
