@@ -38,11 +38,12 @@ def collate_fn(batch):
 
 
 if __name__ == "__main__":
-    data_path = "pusher/expert-v0"
-    batch_size = 2  # How many episodes per batch
+    data_path = "pusher/expert-v1"
+    batch_size = 100  # How many episodes per batch
     dataloader, env = load_dataset(data_path, batch_size)
 
     for batch in dataloader:
-        print(batch)
-        break
+        print(batch['observations'].shape)
+        print(batch['actions'].shape)
+        
 
