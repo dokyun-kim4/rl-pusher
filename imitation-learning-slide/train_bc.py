@@ -3,8 +3,11 @@ import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
 from tqdm import tqdm
+import panda_gym
+import time
+from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 
-from bc_network import BCnetwork
+from bc_network import BCnetworkPanda
 from loader import load_dataset
 
 # TODO Modify to work with panda-gym dataloader
@@ -18,17 +21,17 @@ def train_bc(model_name: str, data_path: str, batch_size: int, num_epochs: int):
     # Load in expert dataset
     dataloader, env = load_dataset(path = data_path, batch_size = batch_size)
     obs_space, act_space = env.observation_space, env.action_space
-    assert isinstance(obs_space, spaces.Box)
+    assert isinstance(obs_space, spaces.Dict)
     assert isinstance(act_space, spaces.Box)
-    input_dim, output_dim = np.prod(obs_space.shape), np.prod(act_space.shape)
+    input_dim, output_dim = np.prod(obs_space['achieved_goal'].shape) + np.prod(obs_space['desired_goal'].shape) + np.prod(obs_space['observation'].shape), np.prod(act_space.shape) #type: ignore
 
 
     # Initialize model, loss function, optimizer
-    model = BCnetwork(input_dim=input_dim, output_dim=output_dim).to(device)
+    model = BCnetworkPanda(input_dim=input_dim, output_dim=output_dim).to(device)
     loss_fn = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters())
 
-    print(f"Training on {'GPU' if device == 'cuda' else 'CPU'}")
+    print(f"Training on {'GPU' if device.type == 'cuda' else 'CPU'}")
 
     for epoch in tqdm(range(num_epochs)):
         for batch in dataloader:
@@ -51,24 +54,38 @@ def train_bc(model_name: str, data_path: str, batch_size: int, num_epochs: int):
 
 if __name__ == "__main__":
 
-    model_pth = train_bc(model_name="test_bc", data_path="pusher/expert-v0", batch_size=100, num_epochs=10)
-    model = BCnetwork(23,7)
-    model.load_state_dict(torch.load(model_pth, weights_only=True))
+    # model_pth = train_bc(model_name="panda_slide_v2", data_path="PandaSlide/expert-v0", batch_size=50, num_epochs=100)
+    model = BCnetworkPanda(24,3)
+    model.load_state_dict(torch.load('./models/panda_slide_v2.pth', weights_only=True))
     model.eval()
 
+    model.to(device)
+
+    ENV_ID = 'PandaSlide-v3'
     n_episodes = 10
-    env = gym.make('Pusher-v5', render_mode="human")
+    base_env = (gym.make(ENV_ID, render_mode='human'))
+    env = DummyVecEnv([lambda: base_env])
+    env = VecNormalize.load(f'logs/tqc/{ENV_ID}_1/{ENV_ID}/vecnormalize.pkl', env)
+    env.norm_obs = True
+    env.training = False
+    env.norm_reward = False  # Disable reward normalization
     for i in tqdm(range(n_episodes)):
-        obs, _ = env.reset()
+        obs_dict = env.reset()
+
         while True:
             action = env.action_space.sample()
-            
+            obs = [
+                    [*ag, *dg, *obs] for ag, dg, obs in zip(obs_dict['achieved_goal'], obs_dict['desired_goal'], obs_dict['observation']) # type:ignore
+                ]
             with torch.no_grad():
                 action = model(torch.Tensor(obs).to(device))
                 action = action.cpu().numpy()
 
-            obs, rew, terminated, truncated, info = env.step(action)
-            env.render()
+            result = env.step(action)
+            obs_dict = result[0]
+            terminated = result[2][0]
+            truncated = result[3][0]['TimeLimit.truncated']
+            time.sleep(0.1)
 
             if terminated or truncated:
                 break
