@@ -4,6 +4,8 @@ By Dexter Friis-Hecht and Dokyun Kim
 ## Project Description  
 In this project, we aim to deepen our understanding of reinforcment learning by implementing Imitation Learning and Deep Reinforcement Learning in the [Minari Pusher environment](https://gymnasium.farama.org/environments/mujoco/pusher/). The pusher environment has a 7-DOF manipulator whose task is to push a cylindrical object into the goal (marked in red).  
 
+Our stretch goal is to implement the same techniques for a [Panda Gym environment](https://github.com/qgallouedec/panda-gym), which offers more advanced robot arm tasks. 
+
 **INSERT IMAGE OF PUSHER ENVIRONMENT**
 
 ## Methodology
@@ -25,15 +27,18 @@ We will define some terminology that will be used in the following sections.
 **Reward**: A value indicating the "quality" of an action. The agent adjusts its policy to maximize this.
 
 ### Imitation Learning (Behavior Cloning)
+*Note* For this section, we will be referring to the Mujoco Pusher environment, but note that the Panda-Gym environment follows the same architecture, just with different values.  
+
 The idea behind imitation learning is quite straightforward. Given an expert demonstration of the task we want the model to perform, can we make the model learn the expert's policy? We implement this using Behavior Cloning, which has one of the simplest architectures.  
 
 In behavior cloning, the agent is initialized with no information about the environment. Given an observation, it will take some action, which will most likely be wrong. However, since we have the expert demonstration, aka the "correct action" to take at a given observation, we can compare the expert's action with our agent's action and make our agent learn the expert policy.  
 
-Pusher's action consists of 7 different torques applied at different joints, which can be represented as a $7 x 1$ vector. The observation consists of 23 values containing information about the arm, cylinder and goal, which can be represented as a $23 x 1$ vector. We will now define our network.
+Pusher's action consists of 7 different torques applied at different joints, which can be represented as a $7 x 1$ vector. The observation consists of 23 values containing information about the arm, cylinder and goal, which can be represented as a $23 x 1$ vector. We want to define a neural network which takes the observation vector as the input and returns the appropriate action as the output. The network is shown below:
 
 <div style="text-align: center;">
   <img src="img/bc_network.png" alt="Behavior Cloning Architecture" width="600">
 </div>
+
 
 
 
