@@ -66,7 +66,7 @@ The training loss graph is shown below.
 </div>
 
 <div style="text-align: center;">
-  <img src="img/trained-agent-pusher" alt="Trained Agent Demo" width="400">
+  <img src="img/trained-agent-pusher.gif" alt="Trained Agent Demo" width="400">
 </div>
 
 ## Deep Reinforcement Learning (Proximal Policy Optimization)
