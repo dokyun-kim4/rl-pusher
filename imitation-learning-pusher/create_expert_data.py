@@ -55,5 +55,5 @@ def get_expert_demo(dataset_id: str, n_episodes:int=100, visualize:bool = True) 
 
 
 if __name__ == "__main__":
-    dataset_id = "pusher/expert-v1"
-    get_expert_demo(dataset_id, n_episodes=1_000, visualize=False)
+    dataset_id = "pusher/expert-v2"
+    get_expert_demo(dataset_id, n_episodes=5_000, visualize=False)
