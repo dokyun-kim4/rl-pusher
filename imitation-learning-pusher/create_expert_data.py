@@ -6,6 +6,7 @@ from huggingface_sb3 import load_from_hub
 import gymnasium as gym
 from tqdm import tqdm
 from minari import DataCollector
+import time
 
 REPO_ID = "farama-minari/Pusher-v5-SAC-expert"
 FILENAME = "pusher-v5-sac-expert.zip"
@@ -36,6 +37,9 @@ def get_expert_demo(dataset_id: str, n_episodes:int=100, visualize:bool = True) 
             action, _ = expert.predict(obs)
             obs, rew, terminated, truncated, info = env.step(action)
 
+            if visualize:
+                time.sleep(0.025)
+
             if terminated or truncated:
                 break
 
@@ -55,5 +59,5 @@ def get_expert_demo(dataset_id: str, n_episodes:int=100, visualize:bool = True) 
 
 
 if __name__ == "__main__":
-    dataset_id = "pusher/expert-v2"
-    get_expert_demo(dataset_id, n_episodes=5_000, visualize=False)
+    dataset_id = "pusher/expert-v3"
+    get_expert_demo(dataset_id, n_episodes=5_000, visualize=True)
