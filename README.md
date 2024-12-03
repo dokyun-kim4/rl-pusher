@@ -39,7 +39,7 @@ Given a dataset $\mathcal{D}$ that contains expert demonstrations $\{s_i, a_i\}_
 
 The goal of the behavior cloning network is to minimize the difference between the policy's action ($\pi^\theta(s_i)$) and expert action ($a_i$). Since the action space of Pusher is continous, the loss function can be defined using the Mean Squared Error loss.
 
-$$\mathcal{L}(\theta) = \frac{1}{N}\sum_{i=1}^N ||\pi^\theta(s_i) - a_i||^2$$
+$$\mathcal{L}(\theta) = \frac{1}{N}\sum_{i=1}^N \left\Vert \pi^\theta(s_i) - a_i \right\Vert^2$$
 
 The model will optimize the network parameters $\theta$ to find $\theta^*$ that minimizes $\mathcal{L}(\theta)$ using backpropagation.
 
