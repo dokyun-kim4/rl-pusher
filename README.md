@@ -27,11 +27,15 @@ We will define some terminology that will be used in the following sections.
 **Reward**: A value indicating the "quality" of an action. The agent adjusts its policy to maximize this.
 
 ## Imitation Learning (Behavior Cloning)
-*Note* For this section, we will be referring to the Mujoco Pusher environment, but note that the Panda-Gym environment follows the same architecture, just with different values.  
+*Note: For this section, we will be referring to the Mujoco Pusher environment, but Panda-Gym also follows the same architecture, just with different values.*
 
 The idea behind imitation learning is quite straightforward. Given an expert demonstration of the task we want the model to perform, can we make the model learn the expert's policy? We implement this using Behavior Cloning, which has one of the simplest architectures.  
 
-<!-- Add expert demonstration GIF -->
+<div style="text-align: center;">
+  <img src="img/expert-demo-pusher.gif" alt="Pusher Expert Demo" width="400">
+</div>
+
+*Fig 1. Expert demonstration of Pusher task*
 
 In behavior cloning, the agent is initialized with no information about the environment. Given an observation, it will take an action which will most likely be wrong. However, since we have the expert demonstration, aka the "correct action" to take at a given observation, we can compare the expert's action with our agent's action and make our agent learn the expert policy.  
 
@@ -61,7 +65,9 @@ The training loss graph is shown below.
   <img src="img/mujoco-pusher.png" alt="Mujoco Training Loss" width="600">
 </div>
 
-<!-- Add trained agent GIF -->
+<div style="text-align: center;">
+  <img src="img/trained-agent-pusher" alt="Trained Agent Demo" width="400">
+</div>
 
 ## Deep Reinforcement Learning (Proximal Policy Optimization)
 
