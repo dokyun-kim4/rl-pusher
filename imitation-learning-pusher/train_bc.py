@@ -3,7 +3,8 @@ import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
 from tqdm import tqdm
-
+import matplotlib.pyplot as plt
+import time
 
 from bc_network import BCnetwork
 from loader import load_dataset
@@ -27,48 +28,62 @@ def train_bc(model_name: str, data_path: str, batch_size: int, num_epochs: int):
     loss_fn = torch.nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters())
 
-    print(f"Training on {'GPU' if device == 'cuda' else 'CPU'}")
+    print(f"Training on {'GPU' if device.type == 'cuda' else 'CPU'}")
 
+    losses = []
     for epoch in tqdm(range(num_epochs)):
+        running_loss = 0
         for batch in dataloader:
             cur_state = batch["observations"][:, :-1].to(device) # We dont need last observation, remove it
             agent_action = model(cur_state.to(torch.float32))
             expert_action = batch["actions"].to(device)
 
             batch_loss = loss_fn(agent_action, expert_action)
+            running_loss += batch_loss.item()
 
             optimizer.zero_grad()
             batch_loss.backward()
             optimizer.step()
 
         print(f"Current Epoch {epoch}/{num_epochs}; Loss: {batch_loss}")
+        losses.append(running_loss / len(dataloader))
 
     torch.save(model.state_dict(), model_path)
-    return model_path
+    print(f"---------- Model saved at {model_path}----------")
+
+    plt.figure()
+    plt.plot(range(num_epochs), losses)
+    plt.title(f"Training Loss over {num_epochs} epochs")
+    plt.show()
 
 
-
-if __name__ == "__main__":
-
-    model_pth = train_bc(model_name="test_bc", data_path="pusher/expert-v0", batch_size=100, num_epochs=10)
-    model = BCnetwork(23,7)
-    model.load_state_dict(torch.load(model_pth, weights_only=True))
+def evaluate_model(model_pth: str, env_id: str, n_episodes: int):
+    model = BCnetwork(23,7).to(device)
+    model.load_state_dict(torch.load(f"models/{model_pth}.pth", weights_only=True))
     model.eval()
 
-    n_episodes = 10
     env = gym.make('Pusher-v5', render_mode="human")
-    for i in tqdm(range(n_episodes)):
+    for _ in tqdm(range(n_episodes)):
         obs, _ = env.reset()
         while True:
-            action = env.action_space.sample()
-            
             with torch.no_grad():
                 action = model(torch.Tensor(obs).to(device))
                 action = action.cpu().numpy()
 
             obs, rew, terminated, truncated, info = env.step(action)
-            env.render()
-
+            time.sleep(0.025)
             if terminated or truncated:
                 break
     env.close()
+
+
+if __name__ == "__main__":
+
+    n_epochs = 500
+    model_pth = "mujoco-pusher-v1"
+
+    # Uncomment to train a new model
+    # losses = train_bc(model_name=model_pth, data_path="pusher/expert-v2", batch_size=20, num_epochs=n_epochs)
+    
+    n_eps = 10
+    evaluate_model(model_pth, "Pusher-v5", n_eps)
