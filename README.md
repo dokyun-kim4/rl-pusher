@@ -39,7 +39,7 @@ The idea behind imitation learning is quite straightforward. Given an expert dem
 
 In behavior cloning, the agent is initialized with no information about the environment. Given an observation, it will take an action which will most likely be wrong. However, since we have the expert demonstration, aka the "correct action" to take at a given observation, we can compare the expert's action with our agent's action and make our agent learn the expert policy.  
 
-Given a dataset $\mathcal{D}$ that contains expert demonstrations $\{s_i, a_i\}_{i=1}^N$ where $N = \text{number of episodes}$, we want to find a policy $\pi^{\theta}$ that mimics the expert's policy. $\pi^{\theta}$ maps states ($S$) to actions ($A$), and is parameterized by $\theta$.  
+Given a dataset $\mathcal{D}$ that contains expert demonstrations $\(s_i, a_i\)_{i=1}^N$ where $N = \text{number of episodes}$, we want to find a policy $\pi^{\theta}$ that mimics the expert's policy. $\pi^{\theta}$ maps states ($S$) to actions ($A$), and is parameterized by $\theta$.  
 
 The goal of the behavior cloning network is to minimize the difference between the policy's action $(\pi^\theta(s_i))$ and expert action ($a_i$). Since the action space of Pusher is continous, the loss function can be defined using the Mean Squared Error loss.
 
