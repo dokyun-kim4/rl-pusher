@@ -8,6 +8,10 @@ from collections import OrderedDict
 from torchsummary import summary
 
 class BCnetwork(nn.Module):
+    """
+    Behavior Cloning model architecture for Mujoco Pusher
+    """
+    
     def __init__(self, input_dim, output_dim):
         super().__init__()
         self.network = nn.Sequential(
@@ -26,9 +30,18 @@ class BCnetwork(nn.Module):
         self.scalar = 2.0
 
     def forward(self, x):
-        x = self.network(x)
-        x = x * self.scalar  # Action space values need to be [-2, 2]
-        return x
+        """
+        Forward pass of the model
+
+        Args:
+            x (Tensor): Input to the model
+
+        Returns:
+            output (Tensor): Output of the model
+        """
+        output = self.network(x)
+        output = output * self.scalar  # Action space values need to be [-2, 2]
+        return output
 
 
 if __name__ == "__main__":
