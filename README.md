@@ -4,9 +4,13 @@ By Dexter Friis-Hecht and Dokyun Kim
 # Project Description  
 In this project, we aim to deepen our understanding of reinforcement learning by implementing Imitation Learning and Deep Reinforcement Learning in the [Minari Pusher environment](https://gymnasium.farama.org/environments/mujoco/pusher/). The pusher environment has a 7-DOF manipulator whose task is to push a cylindrical object into the goal (marked in red).  
 
-Our stretch goal is to implement the same techniques for a [Panda Gym environment](https://github.com/qgallouedec/panda-gym), which offers more advanced robot arm tasks. 
+<div style="text-align: center;">
+  <img src="img/pusher.png" alt="Pusher Environment" width="400">
+</div>
 
-**INSERT IMAGE OF PUSHER ENVIRONMENT**
+*Fig 1. Pusher Environment*  
+
+Our stretch goal is to implement the same techniques for a [Panda Gym environment](https://github.com/qgallouedec/panda-gym), which offers more advanced robot arm tasks. 
 
 # Methodology
 In this section, we will cover basic concepts of reinforcement learning and explain the two methods we used. 
@@ -35,7 +39,7 @@ The idea behind imitation learning is quite straightforward. Given an expert dem
   <img src="img/expert-demo-pusher.gif" alt="Pusher Expert Demo" width="400">
 </div>
 
-*Fig 1. Expert demonstration of Pusher task*
+*Fig 2. Expert demonstration of Pusher task*
 
 In behavior cloning, the agent is initialized with no information about the environment. Given an observation, it will take an action which will most likely be wrong. However, since we have the expert demonstration, aka the "correct action" to take at a given observation, we can compare the expert's action with our agent's action and make our agent learn the expert policy.  
 
@@ -55,6 +59,8 @@ Pusher's action consists of 7 different torques applied at different joints, whi
   <img src="img/bc_network.png" alt="Behavior Cloning Architecture" width="600">
 </div>
 
+*Fig 3. Behavior Cloning Architecture*
+
 The network architecture is a simple Multi-Layer Perceptron with 2 hidden layers. For the Pusher environment, the first hidden layer has 256 neurons and the second layer has 128 neurons.
 
 ### Training and Evaluation
@@ -62,7 +68,7 @@ The network was trained for 500 epochs on 5000 episodes of expert demonstration 
 
 The training loss graph is shown below.
 <div style="text-align: center;">
-  <img src="img/mujoco-pusher.png" alt="Mujoco Training Loss" width="600">
+  <img src="img/pusher-loss-curve.png" alt="Mujoco Training Loss" width="600">
 </div>
 
 <div style="text-align: center;">
