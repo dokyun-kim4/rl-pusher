@@ -12,16 +12,23 @@ from loader import load_dataset
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def train_bc(model_name: str, data_path: str, batch_size: int, num_epochs: int):
+    """
+    Trains a behavioral cloning (BC) model using expert dataset and saves the trained model.
 
+    Args:
+        model_name (str): Name to save the trained model under.
+        data_path (str): Path to the expert dataset in Minari format.
+        batch_size (int): Number of samples per batch.
+        num_epochs (int): Number of training epochs.
+    """
     model_path = f"models/{model_name}.pth"
 
     # Load in expert dataset
-    dataloader, env = load_dataset(path = data_path, batch_size = batch_size)
+    dataloader, env = load_dataset(path=data_path, batch_size=batch_size)
     obs_space, act_space = env.observation_space, env.action_space
     assert isinstance(obs_space, spaces.Box)
     assert isinstance(act_space, spaces.Box)
     input_dim, output_dim = np.prod(obs_space.shape), np.prod(act_space.shape)
-
 
     # Initialize model, loss function, optimizer
     model = BCnetwork(input_dim=input_dim, output_dim=output_dim).to(device)
@@ -34,7 +41,7 @@ def train_bc(model_name: str, data_path: str, batch_size: int, num_epochs: int):
     for epoch in tqdm(range(num_epochs)):
         running_loss = 0
         for batch in dataloader:
-            cur_state = batch["observations"][:, :-1].to(device) # We dont need last observation, remove it
+            cur_state = batch["observations"][:, :-1].to(device)  # Remove last observation
             agent_action = model(cur_state.to(torch.float32))
             expert_action = batch["actions"].to(device)
 
@@ -58,11 +65,19 @@ def train_bc(model_name: str, data_path: str, batch_size: int, num_epochs: int):
 
 
 def evaluate_model(model_pth: str, env_id: str, n_episodes: int):
-    model = BCnetwork(23,7).to(device)
+    """
+    Evaluates the given behavioral cloning (BC) model
+
+    Args:
+        model_pth (str): Path to the saved model file (without extension).
+        env_id (str): The ID of the Gym environment to use for evaluation.
+        n_episodes (int): Number of episodes to evaluate.
+    """
+    model = BCnetwork(23, 7).to(device)
     model.load_state_dict(torch.load(f"models/{model_pth}.pth", weights_only=True))
     model.eval()
 
-    env = gym.make('Pusher-v5', render_mode="human")
+    env = gym.make(env_id, render_mode="human")
     for _ in tqdm(range(n_episodes)):
         obs, _ = env.reset()
         while True:
