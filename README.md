@@ -41,7 +41,7 @@ In behavior cloning, the agent is initialized with no information about the envi
 
 Given a dataset $\mathcal{D}$ that contains expert demonstrations $\{s_i, a_i\}_{i=1}^N$ where $N = \text{number of episodes}$, we want to find a policy $\pi^{\theta}$ that mimics the expert's policy. $\pi^{\theta}$ maps states ($S$) to actions ($A$), and is parameterized by $\theta$.  
 
-The goal of the behavior cloning network is to minimize the difference between the policy's action ($\pi^\theta(s_i)$) and expert action ($a_i$). Since the action space of Pusher is continous, the loss function can be defined using the Mean Squared Error loss.
+The goal of the behavior cloning network is to minimize the difference between the policy's action $(\pi^\theta(s_i))$ and expert action ($a_i$). Since the action space of Pusher is continous, the loss function can be defined using the Mean Squared Error loss.
 
 $$\mathcal{L}(\theta) = \frac{1}{N}\sum_{i=1}^N \left\Vert \pi^\theta(s_i) - a_i \right\Vert^2$$
 
