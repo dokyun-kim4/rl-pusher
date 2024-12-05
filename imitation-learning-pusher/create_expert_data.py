@@ -15,7 +15,7 @@ ENV_ID = "Pusher-v5"
 
 def get_expert_demo(dataset_id: str, n_episodes:int=100, visualize:bool = True) -> None:
     """
-    Generates expert demonstration data and saves it locally
+    Generates expert demonstration data and saves it locally. Run `minari list local` to see datasets you have created.
 
     Args:
         dataset_id (str): Name of dataset; It has to follow the format `ENV_NAME/DATASET_NAME-v(VERSION). Ex: `pusher/expert-v0`. 
@@ -27,6 +27,8 @@ def get_expert_demo(dataset_id: str, n_episodes:int=100, visualize:bool = True) 
 
     render_mode = 'human' if visualize else "rgb_array"
     env = DataCollector(gym.make(ENV_ID, render_mode = render_mode))
+
+    # Load pretrained expert from Huggingface
     checkpoint = load_from_hub(repo_id=REPO_ID, filename=FILENAME)
     expert = SAC.load(checkpoint)
 
@@ -38,6 +40,7 @@ def get_expert_demo(dataset_id: str, n_episodes:int=100, visualize:bool = True) 
             obs, rew, terminated, truncated, info = env.step(action)
 
             if visualize:
+                # This makes the rendered environment smoother
                 time.sleep(0.025)
 
             if terminated or truncated:
@@ -55,9 +58,10 @@ def get_expert_demo(dataset_id: str, n_episodes:int=100, visualize:bool = True) 
     )
     env.close()
 
-    print(f"----------Dataset successfully created at /home/dokyun/.minari/datasets/{dataset_id}----------")
+    print(f"----------Dataset successfully created at .minari/datasets/{dataset_id}----------")
 
 
 if __name__ == "__main__":
+    # Change the version accordingly
     dataset_id = "pusher/expert-v3"
     get_expert_demo(dataset_id, n_episodes=5_000, visualize=True)
