@@ -91,3 +91,25 @@ class PPOMemory:
         self.rewards = []
         self.dones = []
         self.vals = []
+
+class ActorNetwork(nn.Module):
+    def __init__(self, n_actions, input_dims, alpha, fc1_dims=256, fc2_dims=256, chkpt_dir='checkpoints/ppo'):
+        super(ActorNetwork, self).__init__()
+
+        self.checkpoint_file = os.path.join(chkpt_dir, 'actor_torch_ppo')
+        self.action = nn.Sequential(
+            nn.Linear(*input_dims, fc1_dims), # unpack for linear input dims.
+            nn.ReLU(),
+            nn.Linear(fc1_dims, fc2_dims),
+            nn.ReLU(),
+            nn.Linear(fc2_dims, n_actions), # Select one of the possible actions to take 
+            nn.Softmax(dim=-1) 
+        )
+
+        self.optimizer = optim.Adam(self.parameters(), lr=alpha) # GOAT optimizer
+        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        self.to(self.device)
+        
+
+
+
