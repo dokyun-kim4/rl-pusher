@@ -159,6 +159,71 @@ class ActorNetwork(nn.Module):
         """
         self.load_state_dict(torch.load(self.checkpoint_file))
 
+class CriticNetwork(nn.Module):
+    """
+    Neural network representing the critic in the PPO algorithm.
+
+    The critic estimates the value of a given state. Used to calculate
+    advantages during training.
+
+    Attributes:
+        checkpoint_file (str): Path to the file where the model's weights are saved.
+        critic (nn.Sequential): Sequential layers defining the value network.
+        optimizer (torch.optim.Optimizer): Optimizer for training the critic network.
+        device (torch.device): Device (CPU or GPU) where the network is hosted.
+    """
+    def __init__ (self, input_dims, alpha, fc1_dims=256, fc2_dims=256, chkpt_dir='checkpoints/ppo'):
+        """
+        Initialize the CriticNetwork.
+
+        Args:
+            input_dims (tuple): Dimensions of the input state.
+            alpha (float): Learning rate for the optimizer.
+            fc1_dims (int, optional): Number of neurons in the first fully connected layer. Defaults to 256.
+            fc2_dims (int, optional): Number of neurons in the second fully connected layer. Defaults to 256.
+            chkpt_dir (str, optional): Directory to save model checkpoints. Defaults to 'checkpoints/ppo'.
+        """
+        super(CriticNetwork, self).__init__()
+
+        self.checkpoint_file = os.path.join(chkpt_dir, 'critic_torch_ppo') 
+        self.critic = nn.Sequential(
+            nn.Linear(*input_dims, fc1_dims),
+            nn.ReLU(),
+            nn.Linear(fc1_dims, fc2_dims),
+            nn.ReLU(),
+            nn.Linear(fc2_dims, 1) # Estimated value of the input state.
+        )
+
+        self.optimizer = optim.Adam(self.parameters(), lr=alpha)
+        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+        self.to(self.device)
+
+    def forward(self, state):
+        """
+        Perform a forward pass through the network to estimate the value of the input state.
+
+        Args:
+            state (torch.Tensor): Input state tensor.
+
+        Returns:
+            value (torch.Tensor): Estimated value of the input state.
+        """
+        value = self.critic(state)
+
+        return value
+
+    def save_checkpoint(self):
+        """
+        Save the model weights to a checkpoint file.
+        """
+        torch.save(self.state_dict(), self.checkpoint_file)
+    
+    def load_checkpoint(self):
+        """
+        Load the model weights from a checkpoint file.
+        """
+        self.load_state_dict(torch.load(self.checkpoint_file))
+
 
 
 
