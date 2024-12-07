@@ -116,6 +116,11 @@ class ActorNetwork(nn.Module):
 
         return dist
     
+    def save_checkpoint(self):
+        torch.save(self.state_dict(), self.checkpoint_file)
+    
+    def load_checkpoint(self):
+        self.load_state_dict(torch.load(self.checkpoint_file))
 
 
 
