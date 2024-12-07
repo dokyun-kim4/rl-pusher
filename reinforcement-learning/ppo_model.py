@@ -3,10 +3,29 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from typing import List, Tuple
 from torch.distributions.categorical import Categorical
 
 class PPOMemory:
-    def init__(self, batch_size):
+    """
+        A class to handle memory for the PPO reinforcement learning algorithm.
+    
+    Attributes:
+        batch_size (int): The size of each batch for training.
+        states (List): List of stored states.
+        probs (List): List of action probabilities from the policy.
+        vals (List): List of value function estimates.
+        actions (List): List of stored actions.
+        rewards (List): List of rewards received for taking actions.
+        dones (List): List of boolean flags indicating episode termination.
+    """
+    def init__(self, batch_size: int):
+        """
+        Initialize the memory buffer and set batch size.
+
+        Args:
+            batch_size (int): The size of each training batch.
+        """
         self.states = []
         self.probs = []
         self.vals = []
@@ -14,9 +33,22 @@ class PPOMemory:
         self.rewards = []
         self.dones = []
 
-        self.batch_size = batch_size
+        self.batch_size: int = batch_size
 
     def generate_batches(self):
+        """
+        Generate randomized batches for training.
+
+        Returns:
+            Tuple containing:
+                - states (np.ndarray): Array of stored states.
+                - actions (np.ndarray): Array of stored actions.
+                - probs (np.ndarray): Array of action probabilities.
+                - vals (np.ndarray): Array of value function estimates.
+                - rewards (np.ndarray): Array of rewards.
+                - dones (np.ndarray): Array of done flags.
+                - batches (List[np.ndarray]): List of indices for each batch.
+        """
         n_states = len(self.states)
         batch_start = np.arange(0, n_states, self.batch_size)
         idx = np.arange(n_states, dtype=np.int64)
@@ -32,6 +64,17 @@ class PPOMemory:
                 batches
 
     def store_memory(self, state, action, probs, vals, reward, done):
+        """
+        Store an experience in the memory buffer.
+
+        Args:
+            state (any): The observed state.
+            action (any): The action taken.
+            probs (any): The probability of the action from the policy.
+            vals (any): The estimated value of the state.
+            reward (float): The reward received.
+            done (bool): Flag indicating episode termination.
+        """
         self.states.append(state)
         self.probs.append(probs)
         self.vals.append(vals)
@@ -39,6 +82,9 @@ class PPOMemory:
         self.dones.append(done)
 
     def clear_memory(self):
+        """
+        Clear all stored memory from the buffer.
+        """
         self.states = []
         self.probs = []
         self.actions = []
