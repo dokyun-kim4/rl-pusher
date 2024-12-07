@@ -93,7 +93,29 @@ class PPOMemory:
         self.vals = []
 
 class ActorNetwork(nn.Module):
+    """
+    Neural network representing the actor in the PPO algorithm.
+
+    The actor generates a policy (probability distribution) over actions given an input state.
+
+    Attributes:
+        checkpoint_file (str): Path to the file where the model's weights are saved.
+        action (nn.Sequential): Sequential layers defining the policy network.
+        optimizer (torch.optim.Optimizer): Optimizer for training the actor network.
+        device (torch.device): Device (CPU or GPU) where the network is hosted.
+    """
     def __init__(self, n_actions, input_dims, alpha, fc1_dims=256, fc2_dims=256, chkpt_dir='checkpoints/ppo'):
+        """
+        Initialize the ActorNetwork.
+
+        Args:
+            n_actions (int): Number of possible actions.
+            input_dims (tuple): Dimensions of the input state.
+            alpha (float): Learning rate for the optimizer.
+            fc1_dims (int, optional): Number of neurons in the first fully connected layer. Defaults to 256.
+            fc2_dims (int, optional): Number of neurons in the second fully connected layer. Defaults to 256.
+            chkpt_dir (str, optional): Directory to save model checkpoints. Defaults to 'checkpoints/ppo'.
+        """
         super(ActorNetwork, self).__init__()
 
         self.checkpoint_file = os.path.join(chkpt_dir, 'actor_torch_ppo')
@@ -111,15 +133,30 @@ class ActorNetwork(nn.Module):
         self.to(self.device)
     
     def forward(self, state):
+        """
+        Perform a forward pass through the network to generate an action distribution.
+
+        Args:
+            state (torch.Tensor): Input state tensor.
+
+        Returns:
+            Categorical: A categorical distribution over possible actions.
+        """
         dist = self.actor(state)
         dist = Categorical(dist) # convert the state space into a categorical distribution
 
         return dist
     
     def save_checkpoint(self):
+        """
+        Save the model weights to a checkpoint file.
+        """
         torch.save(self.state_dict(), self.checkpoint_file)
     
     def load_checkpoint(self):
+        """
+        Load the model weights from a checkpoint file.
+        """
         self.load_state_dict(torch.load(self.checkpoint_file))
 
 
