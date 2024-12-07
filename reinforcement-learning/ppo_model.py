@@ -30,3 +30,18 @@ class PPOMemory:
                 np.array(self.rewards),\
                 np.array(self.dones),\
                 batches
+
+    def store_memory(self, state, action, probs, vals, reward, done):
+        self.states.append(state)
+        self.probs.append(probs)
+        self.vals.append(vals)
+        self.rewards.append(reward)
+        self.dones.append(done)
+
+    def clear_memory(self):
+        self.states = []
+        self.probs = []
+        self.actions = []
+        self.rewards = []
+        self.dones = []
+        self.vals = []
