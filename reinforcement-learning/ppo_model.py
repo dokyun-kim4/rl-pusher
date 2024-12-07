@@ -109,7 +109,14 @@ class ActorNetwork(nn.Module):
         self.optimizer = optim.Adam(self.parameters(), lr=alpha) # GOAT optimizer
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         self.to(self.device)
-        
+    
+    def forward(self, state):
+        dist = self.actor(state)
+        dist = Categorical(dist) # convert the state space into a categorical distribution
+
+        return dist
+    
+
 
 
 
