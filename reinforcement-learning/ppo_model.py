@@ -19,7 +19,7 @@ class PPOMemory:
         rewards (List): List of rewards received for taking actions.
         dones (List): List of boolean flags indicating episode termination.
     """
-    def init__(self, batch_size: int):
+    def __init__(self, batch_size: int):
         """
         Initialize the memory buffer and set batch size.
 
@@ -76,6 +76,7 @@ class PPOMemory:
             done (bool): Flag indicating episode termination.
         """
         self.states.append(state)
+        self.actions.append(action)
         self.probs.append(probs)
         self.vals.append(vals)
         self.rewards.append(reward)
@@ -119,7 +120,7 @@ class ActorNetwork(nn.Module):
         super(ActorNetwork, self).__init__()
 
         self.checkpoint_file = os.path.join(chkpt_dir, 'actor_torch_ppo')
-        self.action = nn.Sequential(
+        self.actor = nn.Sequential(
             nn.Linear(*input_dims, fc1_dims), # unpack for linear input dims.
             nn.ReLU(),
             nn.Linear(fc1_dims, fc2_dims),
@@ -225,5 +226,107 @@ class CriticNetwork(nn.Module):
         self.load_state_dict(torch.load(self.checkpoint_file))
 
 
+class Agent:
+    def __init__(self, n_actions, input_dims, gamma=0.99, alpha=0.0003, gae_lambda=0.95, policy_clip=0.2, batch_size=64, N=2048, n_epochs=10):
+        self.gamma = gamma
+        self.policy_clip = policy_clip
+        self.n_epochs = n_epochs
+        self.gae_lambda = gae_lambda
 
+        self.actor = ActorNetwork(n_actions, input_dims, alpha)
+        self.critic = CriticNetwork(input_dims, alpha)
+        self.memory = PPOMemory(batch_size)
+
+    def remember(self, state, action, probs, vals, reward, done):
+        self.memory.store_memory(state, action, probs, vals, reward, done)
+    
+    def save_models(self):
+        """
+        Save checkpoints for the actor and critic model.
+        """
+        print('... saving models')
+        self.actor.save_checkpoint()
+        self.critic.save_checkpoint()
+
+    def load_models(self):
+        """
+        Load updates for the actor and critic model.
+        """
+        print("... loading model")
+        self.actor.load_checkpoint()
+        self.critic.load_checkpoint()
+
+    def choose_action(self, observation):
+        """
+        Samples an action from the current action space distribution.
+
+        Args:
+            observation (any): An observation of the current state.
+        
+        Returns:
+            action 
+        """
+        state = torch.tensor([observation], dtype=torch.float).to(self.actor.device)
+
+        dist = self.actor(state)
+        value = self.critic(state)
+        action = dist.sample()
+
+        probs = torch.squeeze(dist.log_prob(action)).item()
+        action = torch.squeeze(action).item()
+        value = torch.squeeze(value).item()
+
+        return action, probs, value
+
+    def learn(self):
+        for _ in range(self.n_epochs):
+            state_arr, action_arr, old_probs_arr, vals_arr, reward_arr, done_arr, batches = self.memory.generate_batches()
+
+            values = vals_arr
+            advantage = np.zeros(len(reward_arr), dtype=np.float32)
+
+            for t in range(len(reward_arr)-1):
+                discount = 1
+                advantage_t = 0
+                for k in range(t, len(reward_arr)-1):
+                    advantage_t += discount*(reward_arr[k] + self.gamma*values[k+1]*(1-int(done_arr[k])) - values[k])
+                    discount *= self.gamma*self.gae_lambda
+                advantage[t] = advantage_t
+
+            advantage = torch.tensor(advantage).to(self.actor.device)
+            values = torch.tensor(values).to(self.actor.device)
+
+            for batch in batches:
+                # pi(theta_old)
+                states = torch.tensor(state_arr[batch], dtype=torch.float).to(self.actor.device)
+                old_probs = torch.tensor(old_probs_arr[batch]).to(self.actor.device)
+                actions = torch.tensor(action_arr[batch]).to(self.actor.device)
+
+                critic_value = self.critic(states)
+                critic_value = torch.squeeze(critic_value)
+                # pi(theta_new)
+                dist = self.actor(states)
+                new_probs = dist.log_prob(actions)
+                # pi(theta_new)/pi(theta_old)
+                prob_ratio = new_probs.exp() / old_probs.exp()
+
+                # A^t
+                weighted_probs = advantage[batch] * prob_ratio
+                # Clipping function from fig.7 of PPO paper.
+                weighted_clipped_probs = torch.clamp(prob_ratio, 1-self.policy_clip, 1+self.policy_clip)*advantage[batch]
+
+                actor_loss = -torch.min(weighted_probs, weighted_clipped_probs).mean()
+
+                returns = advantage[batch] + values[batch]
+                critic_loss = (returns-critic_value)**2
+                critic_loss = critic_loss.mean()
+
+                total_loss = actor_loss + 0.5*critic_loss
+                self.actor.optimizer.zero_grad()
+                self.critic.optimizer.zero_grad()
+                total_loss.backward()
+                self.actor.optimizer.step()
+                self.critic.optimizer.step()
+            
+            self.memory.clear_memory()
 
