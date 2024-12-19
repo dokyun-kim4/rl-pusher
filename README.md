@@ -30,6 +30,8 @@ We will define some terminology that will be used in the following sections.
 
 **Reward**: A value indicating the "quality" of an action. The agent adjusts its policy to maximize this.
 
+**Trajectory**: A sequence of states and actions. ($\tau$)
+
 ## Imitation Learning (Behavior Cloning)
 *Note: For this section, we will be referring to the Mujoco Pusher environment, but Panda-Gym also follows the same architecture, just with different values.*
 
