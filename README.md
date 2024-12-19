@@ -51,7 +51,7 @@ In behavior cloning, the agent is initialized with no information about the envi
 
 Given a dataset $\mathcal{D}$ that contains expert demonstrations $\(s_i, a_i\)_{i=1}^N$ where $N = \text{number of episodes}$, we want to find a policy $\pi^{\theta}$ that mimics the expert's policy. $\pi^{\theta}$ maps states ($S$) to actions ($A$), and is parameterized by $\theta$.  
 
-The goal of the behavior cloning network is to minimize the difference between the policy's action $(\pi^\theta(s_i))$ and expert action ($a_i$). Since the action space of Pusher is continous, the loss function can be defined using the Mean Squared Error loss.
+The goal of the behavior cloning network is to minimize the difference between the policy's action $(\pi^\theta(s_i))$ and expert action ($a_i$). Since the action space of Pusher is continuous, the loss function can be defined using the Mean Squared Error loss.
 
 $$\mathcal{L}(\theta) = \frac{1}{N}\sum_{i=1}^N \left\Vert \pi^\theta(s_i) - a_i \right\Vert^2$$
 
@@ -85,7 +85,7 @@ The training loss graph is shown below.
 
 With Proximal Policy Optimization (PPO), we seek to learn the desired behavior from scratch, which makes the overall agent architecture more complex. The question it seeks to answer is, "Given an environment and action space, can we learn a policy in a stable manner, without instability leading to loss of performance?" \\
 
-More strictly, PPO is a type of On-Policy reinforcement learning agorithm that aims to optimize its policy indirectly through an objective function. Chiefly, PPO ensures stability by limiting the magnitude of changes between policies through a clipping mechanism. Additionally, PPO uses an arctor-critic framework for its model architecture, where the actor generates actions, and the critic estimates their value.
+More strictly, PPO is a type of On-Policy reinforcement learning algorithm that aims to optimize its policy indirectly through an objective function. Chiefly, PPO ensures stability by limiting the magnitude of changes between policies through a clipping mechanism. Additionally, PPO uses an actor-critic framework for its model architecture, where the actor generates actions, and the critic estimates their value.
 
 The PPO methodology is as follows:
 
@@ -111,7 +111,7 @@ $$g(\epsilon, A) =
 
 where $\epsilon$ is typically some small value around 0.2.
 
-The $min()$ function indicates that we take the minimum between the *probabiliy* ratio and the clipping function. Essentially, this ensures that the ratio between the old and new policy doesn't change by more than $\epsilon$ at a time. Ideally, this ensures learning stability.
+The $min()$ function indicates that we take the minimum between the *probability* ratio and the clipping function. Essentially, this ensures that the ratio between the old and new policy doesn't change by more than $\epsilon$ at a time. Ideally, this ensures learning stability.
 
 Finally, the two summation symbols indicate that we sum over every timestep $t$ within a given trajectory $\tau$, and then sum over the set of trajectories, $D_k$.
 
@@ -125,7 +125,7 @@ We now return to the overall PPO methodology.
 
    With this, we are comparing our critic's current value function $V_\phi$ to $\hat{R}_t$, which is known as the *reward-to-go*.
 
-   Like the name implies, $\hat{R}_t$ is the total cummulative sum of total future rewards for the remainder of the current trajectory, $\tau$, and is calculated with,
+   Like the name implies, $\hat{R}_t$ is the total cumulative sum of total future rewards for the remainder of the current trajectory, $\tau$, and is calculated with,
 
    $$R_t=\sum_{k=t}^{T}\gamma^{k-t}r_k$$
 
@@ -135,10 +135,10 @@ We now return to the overall PPO methodology.
 
 This entire pipeline then repeats for however many epochs of training you choose to use, represented by $k$.
 
-The actor uses an identical neural network architecture to behavior cloning, as shown in *figure 3.* above. The critic network uses a similar architecture, with the output layer containing only a single output for estimating vaule. Both networks have two hidden layers of size 256.
+The actor uses an identical neural network architecture to behavior cloning, as shown in *figure 3.* above. The critic network uses a similar architecture, with the output layer containing only a single output for estimating value. Both networks have two hidden layers of size 256.
 
 ### Training and Evaluation
-The model was trained for 15 minutes on an NVIDIA RTX A1000 Laptop GPU over 200,000 timesteps for approx. 15 minutes. For this training, the Stable Baseline 3 library was used, with continous environment support being a next step for our implementation.
+The model was trained for 15 minutes on an NVIDIA RTX A1000 Laptop GPU over 200,000 timesteps for approx. 15 minutes. For this training, the Stable Baseline 3 library was used, with continuous environment support being a next step for our implementation.
 
 The training rewards graph is shown below.
 <div style="text-align: center;">
@@ -151,8 +151,8 @@ The training rewards graph is shown below.
 
 # Lessons Learned
 
-First and foremost, if you have access to some kind of expert data, then imitation learning can be a highly effective approach. Going beyond the example in this repository, people are working on imitation learning from real world animals/human research. This can be advantagous, as it allows us to create bioinspired movement patterns for robotics, which would ideally be well suited for the real world. Additionally, if a human is creating the expert demonstrations, then this gives us a high level of control over how a robot learns to engage with a task, which can help reduce unexpected outcomes. Of course, this is a more limited approach sometimes, since we need to first create the relevant training data, and overall training took longer relative to PPO.
+First and foremost, if you have access to some kind of expert data, then imitation learning can be a highly effective approach. Going beyond the example in this repository, people are working on imitation learning from real world animals/human research. This can be advantageous, as it allows us to create bio-inspired movement patterns for robotics, which would ideally be well suited for the real world. Additionally, if a human is creating the expert demonstrations, then this gives us a high level of control over how a robot learns to engage with a task, which can help reduce unexpected outcomes. Of course, this is a more limited approach sometimes, since we need to first create the relevant training data, and overall training took longer relative to PPO.
 
 Moving on to PPO, it has proven to be a reasonably effective method of learning a task. However, we found it to be a bit of a victim of its own design goals. While PPO's clipping objective function does a good job of preventing instability during training, it can also end up limiting the agent's overall exploration. While this is fine for environments that reliably provide rewards, it can pose an issue for more sparsely rewarded environments, such as the Mountain Car environment. In these kinds of environments, the model never explores enough to get a reward, and as a result has little actionable feedback for how to improve its policy. Additionally, since PPO can produce more novel behaviors than imitation learning, you'll need to monitor the robot more strictly to ensure that it doesn't engage in unexpected behavior in the real world.
 
-To resolve the issue of exploration, future steps could be taken, such as adding an *entropy bonus* which encourages additional exploration. Additionally, evauation of the two model infrasturctures in a wider range of environments should be taken. For the PPO model specifically, we will be adding continous environment support to ensure that it can operate within the wider range of environments.
+To resolve the issue of exploration, future steps could be taken, such as adding an *entropy bonus* which encourages additional exploration. Additionally, evaluation of the two model infrastructures in a wider range of environments should be taken. For the PPO model specifically, we will be adding continuous environment support to ensure that it can operate within the wider range of environments.
