@@ -77,6 +77,10 @@ The training loss graph is shown below.
 
 ## Deep Reinforcement Learning (Proximal Policy Optimization)
 
+With Proximal Policy Optimization (PPO), we seek to learn the desired behavior from scratch, which makes the overall agent architecture more complex. The question it seeks to answer is, "Given an environment and action space, can we learn a policy in a stable manner, without instability leading to loss of performance?" \\
+
+More strictly, PPO is a type of On-Policy reinforcement learning agorithm that aims to optimize its policy indirectly through an objective function. Chiefly, PPO ensures stability by limiting the magnitude of changes between policies through a clipping mechanism. Additionally, PPO uses an arctor-critic framework for its model architecture, where the actor generates actions, and the critic estimates their value.
+
 
 # Lessons Learned
 
