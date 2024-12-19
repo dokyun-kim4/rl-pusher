@@ -134,11 +134,14 @@ The actor uses an identical neural network architecture to behavior cloning, as 
 ### Training and Evaluation
 The model was trained for 15 minutes on an NVIDIA RTX A1000 Laptop GPU over 200,000 timesteps for approx. 15 minutes.
 
-The training loss graph is shown below.
+The training rewards graph is shown below.
 <div style="text-align: center;">
-  <img src="img/pusher-loss-curve.png" alt="Mujoco Training Loss" width="600">
+  <img src="img/ppo-pusher-rewards-curve.png" alt="Mujoco Training Rewards" width="600">
 </div>
 
+<div style="text-align: center;">
+  <img src="img/trained-agent-pusher.gif" alt="Trained Agent Demo" width="400">
+</div>
 
 # Lessons Learned
 
