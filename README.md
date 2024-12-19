@@ -81,6 +81,58 @@ With Proximal Policy Optimization (PPO), we seek to learn the desired behavior f
 
 More strictly, PPO is a type of On-Policy reinforcement learning agorithm that aims to optimize its policy indirectly through an objective function. Chiefly, PPO ensures stability by limiting the magnitude of changes between policies through a clipping mechanism. Additionally, PPO uses an arctor-critic framework for its model architecture, where the actor generates actions, and the critic estimates their value.
 
+The PPO methodology is as follows:
+
+1. For *k* epochs, collect a set of trajectories $D_k$, by running the policy $\pi(\theta)$ in the environment.
+2. Compute future rewards, $R$, and compute advantage $A$ with $A=R-V$, where $V$ is the current output from the critic's value function.
+3. Update the actor policy by maximizing the following objective function:
+
+   $$\theta_{k+1} = \arg\max_{\theta} \frac{1}{|D_k|T} \sum_{\tau \in D_k} \sum_{t=0}^T \min\left(\frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_k}(a_t | s_t)} A^{\pi_{\theta_k}}(s_t, a_t), g(\epsilon, A^{\pi_{\theta_k}}(s_t, a_t))\right)$$
+
+The equation is quite long, so let's quickly look at what each element represents:
+
+$\frac{\pi_\theta(a_t | s_t)}{\pi_{\theta_k}(a_t | s_t)}$ is the ratio of the old policy, $\pi_{\theta_k}$, to the current policy $\pi_{\theta}$. We can think of this as a *probability ratio*.
+
+$A^{\pi_{\theta_k}}(s_t, a_t)$ is the advantage function under the old policy, which evaluates how good the action $a_t$ is relative to the average action at the state $s_t$.
+
+$g(\epsilon, A)$ is the clipping function which can be expressed with the following piecewise equation,
+
+$$g(\epsilon, A) =
+\begin{cases}
+(1 + \epsilon) A & \text{if } A > 0, \\
+(1 - \epsilon) A & \text{if } A < 0.
+\end{cases}$$
+
+where $\epsilon$ is typically some small value around 0.2.
+
+The $min()$ function indicates that we take the minimum between the *probabiliy* ratio and the clipping function. Essentially, this ensures that the ratio between the old and new policy doesn't change by more than $\epsilon$ at a time. Ideally, this ensures learning stability.
+
+Finally, the two summation symbols indicate that we sum over every timestep $t$ within a given trajectory $\tau$, and then sum over the set of trajectories, $D_k$.
+
+We seek to maximize the output of this function by optimizing our policy parameters, $\theta$. For our implementation, this is done with the ADAM optimizer.
+
+We now return to the overall PPO methodology.
+
+4. Update the critic network through mean-squared error and gradient descent:
+
+   $$\phi_{k+1}= \arg\min_{\phi} \frac{1}{|D_k|T} \sum_{\tau \in D_k} \sum_{t=0}^T (V_\phi(s_t)-\hat{R}_t)^2$$
+
+   With this, we are comparing our critic's current value function $V_\phi$ to $\hat{R}_t$, which is known as the *reward-to-go*.
+
+   Like the name implies, $\hat{R}_t$ is the total cummulative sum of total future rewards for the remainder of the current trajectory, $\tau$, and is calculated with,
+
+   $$R_t=\sum_{k=t}^{T}\gamma^{k-t}r_k$$
+
+   where $\gamma$ is the *discount factor*, typically around 0.99, and $r_k$ is the reward for timestep $k$. By multiplying future rewards by this discount factor, earlier rewards become worth more than future rewards. This is important to ensure that the actor model learns to choose actions that provide the most immediate gain.
+
+   Just like with our prior objective function, we also have a normalizing factor $\frac{1}{|D_k|T}$.
+
+This entire pipeline then repeats for however many epochs of training you choose to use, represented by $k$.
+
+The actor uses an identical neural network architecture to behavior cloning, as shown in *figure 3.* above. The critic network uses a similar architecture, with the output layer containing only a single output for estimating vaule.
+
+
+
 
 # Lessons Learned
 
