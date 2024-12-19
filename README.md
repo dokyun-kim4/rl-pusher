@@ -138,7 +138,7 @@ This entire pipeline then repeats for however many epochs of training you choose
 The actor uses an identical neural network architecture to behavior cloning, as shown in *figure 3.* above. The critic network uses a similar architecture, with the output layer containing only a single output for estimating vaule. Both networks have two hidden layers of size 256.
 
 ### Training and Evaluation
-The model was trained for 15 minutes on an NVIDIA RTX A1000 Laptop GPU over 200,000 timesteps for approx. 15 minutes.
+The model was trained for 15 minutes on an NVIDIA RTX A1000 Laptop GPU over 200,000 timesteps for approx. 15 minutes. For this training, the Stable Baseline 3 library was used, with continous environment support being a next step for our implementation.
 
 The training rewards graph is shown below.
 <div style="text-align: center;">
@@ -155,4 +155,4 @@ First and foremost, if you have access to some kind of expert data, then imitati
 
 Moving on to PPO, it has proven to be a reasonably effective method of learning a task. However, we found it to be a bit of a victim of its own design goals. While PPO's clipping objective function does a good job of preventing instability during training, it can also end up limiting the agent's overall exploration. While this is fine for environments that reliably provide rewards, it can pose an issue for more sparsely rewarded environments, such as the Mountain Car environment. In these kinds of environments, the model never explores enough to get a reward, and as a result has little actionable feedback for how to improve its policy. Additionally, since PPO can produce more novel behaviors than imitation learning, you'll need to monitor the robot more strictly to ensure that it doesn't engage in unexpected behavior in the real world.
 
-To resolve the issue of exploration, future steps could be taken, such as adding an *entropy bonus* which encourages additional exploration. Additionally, evauation of the two model infrasturctures in a wider range of environments should be taken.
+To resolve the issue of exploration, future steps could be taken, such as adding an *entropy bonus* which encourages additional exploration. Additionally, evauation of the two model infrasturctures in a wider range of environments should be taken. For the PPO model specifically, we will be adding continous environment support to ensure that it can operate within the wider range of environments.
