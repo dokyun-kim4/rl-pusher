@@ -129,9 +129,15 @@ We now return to the overall PPO methodology.
 
 This entire pipeline then repeats for however many epochs of training you choose to use, represented by $k$.
 
-The actor uses an identical neural network architecture to behavior cloning, as shown in *figure 3.* above. The critic network uses a similar architecture, with the output layer containing only a single output for estimating vaule.
+The actor uses an identical neural network architecture to behavior cloning, as shown in *figure 3.* above. The critic network uses a similar architecture, with the output layer containing only a single output for estimating vaule. Both networks have two hidden layers of size 256.
 
+### Training and Evaluation
+The model was trained for 15 minutes on an NVIDIA RTX A1000 Laptop GPU over 200,000 timesteps for approx. 15 minutes.
 
+The training loss graph is shown below.
+<div style="text-align: center;">
+  <img src="img/pusher-loss-curve.png" alt="Mujoco Training Loss" width="600">
+</div>
 
 
 # Lessons Learned
