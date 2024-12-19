@@ -140,7 +140,7 @@ The training rewards graph is shown below.
 </div>
 
 <div style="text-align: center;">
-  <img src="img/trained-agent-pusher.gif" alt="Trained Agent Demo" width="400">
+  <img src="img/ppo-demo-pusher.gif" alt="Trained Agent Demo" width="400">
 </div>
 
 # Lessons Learned
