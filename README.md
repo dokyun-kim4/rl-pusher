@@ -10,6 +10,10 @@ In this project, we aim to deepen our understanding of reinforcement learning by
 
 *Fig 1. Pusher Environment*  
 
+Special thanks to Phil Tabor for his PPO implementation, which formed the core of ours: https://github.com/philtabor/Youtube-Code-Repository/blob/master/ReinforcementLearning/PolicyGradient/PPO/tf2/agent.py
+
+Additionally, special thanks to OpenAI's "Spinning Up" series for additional context on PPO implementation: https://spinningup.openai.com/en/latest/algorithms/ppo.html
+
 Our stretch goal is to implement the same techniques for a [Panda Gym environment](https://github.com/qgallouedec/panda-gym), which offers more advanced robot arm tasks. 
 
 # Methodology
