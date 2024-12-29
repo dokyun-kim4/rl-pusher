@@ -77,9 +77,13 @@ The training loss graph is shown below.
   <img src="img/pusher-loss-curve.png" alt="Mujoco Training Loss" width="600">
 </div>
 
+*Fig 4. Behavior Cloning Loss Curve*
+
 <div style="text-align: center;">
   <img src="img/trained-agent-pusher.gif" alt="Trained Agent Demo" width="400">
 </div>
+
+*Fig 5. Behavior Cloning Agent*
 
 ## Deep Reinforcement Learning (Proximal Policy Optimization)
 
@@ -145,9 +149,13 @@ The training rewards graph is shown below.
   <img src="img/ppo-pusher-rewards-curve.png" alt="Mujoco Training Rewards" width="600">
 </div>
 
+*Fig 6. PPO Rewards Curve*
+
 <div style="text-align: center;">
   <img src="img/ppo-demo-pusher.gif" alt="Trained Agent Demo" width="400">
 </div>
+
+*Fig 7. PPO Agent*
 
 # Lessons Learned
 
