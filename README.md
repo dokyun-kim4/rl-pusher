@@ -64,7 +64,7 @@ $$\theta^* = \underset{\theta}{\mathrm{argmin}} \, \mathcal{L}(\theta)$$
 Pusher's action consists of 7 different torques applied at different joints, which can be represented as a $7 \text{x} 1$ vector. The observation consists of 23 values containing information about the arm, cylinder and goal, which can be represented as a $23 \text{x} 1$ vector. We want to define a neural network which takes the observation vector as the input and returns the appropriate action as the output. The network is shown below:
 
 <div style="text-align: center;">
-  <img src="img/bc_network.png" alt="Behavior Cloning Architecture" width="600">
+  <img src="img/bc_architecture.png" alt="Behavior Cloning Architecture" width="600">
 </div>
 
 *Fig 3. Behavior Cloning Architecture*
